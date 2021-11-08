@@ -8,13 +8,12 @@ let socket: Socket;
 export default function GetRoom()  {
     const router = useRouter();
     const { code, name } = router.query
-    const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_IO_ENDPOINT
+    const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_IO_ENDPOINT!
     console.log(ENDPOINT);
     let drawCanvas: CanvasDraw | null;
     let peopleCanvas: CanvasDraw | null;
 
     useEffect(() => {
-        console.log(ENDPOINT);
         socket = io(ENDPOINT)
         socket.emit('join', {name, room: code}, console.log)
 
