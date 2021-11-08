@@ -3,7 +3,7 @@ import { Server } from 'socket.io';
 import express from 'express';
 import socket from './socket';
 
-const port: number = parseInt(process.env.PORT!);
+const port: number = parseInt(process.env.PORT!) || 4000;
 const host = process.env.HOST;
 const corsOrigin = process.env.CORS_ORIGIN;
 
