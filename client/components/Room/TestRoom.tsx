@@ -8,7 +8,7 @@ let socket: Socket;
 export default function GetRoom()  {
     const router = useRouter();
     const { code, name } = router.query
-    const ENDPOINT = 'localhost:4000'
+    const ENDPOINT = process.env.SOCKET_IO_ENDPOINT!
 
     let drawCanvas: CanvasDraw | null;
     let peopleCanvas: CanvasDraw | null;
