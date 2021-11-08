@@ -1,0 +1,49 @@
+.button {
+    color: #fff !important;
+    background: #7429ff;
+    
+    border: none;
+    text-align: center;
+    font-size: 20px;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-family: 'Source Sans Pro', sans-serif;
+
+    padding: 20px;
+    margin: 5px;
+    border-radius: 5px;
+
+    transition-duration: 0.4s;
+} 
+.button:hover {
+    background-color: #1a1daf;
+    padding: 25px;
+}
+.buttonContainer {
+    display: flex;
+    position: relative;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.inputContainer {
+    display: flex;
+    position: relative;
+
+    justify-content: center;
+}
+
+.menuContainer {
+    display: flex;
+
+    width: 99vw;
+    height: 98.3vh;
+
+    align-content: center;
+
+    justify-content: center;
+    flex-direction: column;
+
+    background-color: #121212;
+}
