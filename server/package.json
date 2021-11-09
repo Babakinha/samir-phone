@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app.js",
+  "main": "out/app.js",
   "scripts": {
     "dev": "nodemon --config nodemon.json src/app.ts",
     "build": "tsc",
