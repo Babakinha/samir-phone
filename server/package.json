@@ -11,12 +11,10 @@
   "author": "Babakinha",
   "license": "UNLICENSED",
   "dependencies": {
-    "config": "^3.3.6",
     "express": "^4.17.1",
     "socket.io": "^4.3.1"
   },
   "devDependencies": {
-    "@types/config": "^0.0.40",
     "@types/express": "^4.17.13",
     "@types/node": "^16.11.6",
     "nodemon": "^2.0.14",
