@@ -37,8 +37,7 @@
 .menuContainer {
     display: flex;
 
-    width: 99vw;
-    height: 98.3vh;
+    height: 100vh;
 
     align-content: center;
 
