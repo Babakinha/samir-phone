@@ -1,17 +1,19 @@
 import { NextPage } from 'next'
 import { useRouter } from 'next/dist/client/router'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect,useState } from 'react'
 import Lobby from '../components/Lobby/Lobby'
 
-const Room: NextPage = () => {
+const Invite: NextPage = () => {
     const router = useRouter()
-    const {name, code} = router.query
+    const { code } = router.query
     
     
     const [ThisPage, setThisPage] = useState(<div />)
     useEffect(() => {
         if(!router.isReady) return;
-        if(!code || !name) {router.push("/"); return;}
+        if(!code) {console.log("code: ", code); router.push("/"); return;}
+        const name = prompt('Please select a name:')
+        console.log(name, code)
 
         window.history.replaceState(null, '', '/room');
         setThisPage(< Lobby name={name as string} code={code as string} setPage={setThisPage} />)
@@ -24,4 +26,4 @@ const Room: NextPage = () => {
   )
 }
 
-export default Room;
+export default Invite;

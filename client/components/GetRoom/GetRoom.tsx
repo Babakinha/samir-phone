@@ -1,12 +1,9 @@
-import { useRouter } from 'next/dist/client/router';
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import Lobby from '../Lobby/Lobby';
 
 import styles from './GetRoom.module.css'
 
-export default function GetRoom()  {
-    const router = useRouter();
-    //const [name, setName] = useState('');
-    //const [code, setCode] = useState('');
+export default function GetRoom({ setPage }: { setPage : Function})  {
     let name: string, code: string;
     const nameCheck = (): boolean => {
         return Boolean(name)
@@ -15,7 +12,9 @@ export default function GetRoom()  {
         //setCode(prompt('Enter The Room Code')!);
         if(!nameCheck()) return;
         code = prompt('Enter The Room Code')!;
-        router.push(`/room?code=${code}&name=${name}`);
+        window.history.replaceState(null, '', '/room');
+        setPage(<Lobby code={code} name={name} setPage={setPage} />);
+
     }
 
     const createRoom = () => {
@@ -23,7 +22,8 @@ export default function GetRoom()  {
         //setCode(Math.floor(1000 + Math.random() * 9000).toString())
         if(!nameCheck()) return;
         code = Math.floor(1000 + Math.random() * 9000).toString();
-        router.push(`/room?code=${code}&name=${name}`);
+        window.history.replaceState(null, '', '/room');
+        setPage(<Lobby code={code} name={name} setPage={setPage} />);
     }
 
     return (

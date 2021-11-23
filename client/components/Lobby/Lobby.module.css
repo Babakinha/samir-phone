@@ -1,42 +1,185 @@
-.playerList {
-    display: flex;
-    justify-content: center;
+.lobbyContainer {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+	background-size: 400% 400%;
+	animation: gradient 15s ease infinite;
+
+    height: 100vh;
+    font-size: 16px;
+    font-size: 3.5vw;
     
-    margin: 0 auto;
-
-    width: 75vw;
-    overflow-x:hidden;
-    flex-wrap: wrap;
+    
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas: 
+    'header'
+    'main'
+    'footer';
 }
 
-.playerList span {
-    background-color: rgba(255, 0, 0, 0.2);
-    padding: .4em;
-    margin: 1em;
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
 }
-.playerList span[owner] {
-    background-color: rgba(0, 0, 255, 0.2);
 
-}
 
-.modeList {
+.lobbyHead {
+    grid-area: header;
+
     display: flex;
-    flex-direction: row;
     justify-content: center;
+    align-items: center;
+    position: relative;
+
+    background-color: #333;
+    overflow: hidden;
+    color: white;
 }
-.modeList button[class^="active"] {
-    background-color: rgb(0, 225, 255);
-    transform: scale(1.1);
+.lobbyHead span {
+    margin: 10px;
 }
-.modeList button {
-    background-color: rgba(140, 0, 255, 0.4);
-    padding: .4em;
-    margin: 1em;
+
+.lobbyCode {
+    padding: 5px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.mainContainer {
+    grid-area: main;
+    
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    position: relative;
+    
+}
+
+.startButton {
+    font-size: 2vw;
+
+    color: #fff !important;
+    background: #7429ff;
+    border: 3px solid black;
+    border-radius: 5px;
+    padding: 0.2em 0.4em;
+
+    position: absolute;
+    right: 10px;
+    top: 10px;
 
     transition: all .2s ease-in-out;
 }
 
-.modeList button:not([disabled]):hover {
-    background-color: rgba(140, 0, 255, 0.2);
+.startButton:hover {
+    background: #9f6efa;
+}
+
+.startButton:disabled {
+    display: none;
+
+
+}
+
+.muteButton {
+    color: #fff !important;
+    background: #7429ff;
+    border: 3px solid black;
+    border-radius: 5px;
+
+    position: absolute;
+    right: 10px;
+
+    transition: all .2s ease-in-out;
+}
+
+.muteButtonMuted {
+    color: #fff !important;
+    background: #632fc5;
+    border: 3px solid black;
+    border-radius: 5px;
+
+    position: absolute;
+    right: 10px;
+
+    transition: all .2s ease-in-out;
+}
+
+.muteButton:hover {
+    background: #9f6efa;
+}
+
+.muteButtonMuted:hover {
+    background: #9f6efa;
+}
+
+.playerList {
+
+    display: flex;
+    justify-content: center;
+    
+    margin: 0 auto;
+    padding-inline-start: 0;
+    font-size: max(2vw, 2vh);
+
+
+    width: 75vw;
+    overflow-x: visible;
+    flex-wrap: wrap;
+}
+
+.playerList span {
+    background-color: #e73cd9;
+    border-radius: 5px;
+    border: 3px solid black;
+
+    padding: .4em;
+    margin: 1em;
+    margin-top: 2em;
+}
+.playerList span[owner] {
+    background-color: #3c72e7;
+
+}
+
+.modeList {
+    grid-area: footer;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    bottom: 0;
+}
+.modeList button {
+    background-color: #7429ff;
+    color: white;
+    border: 2px solid black;
+
+    padding: .4em;
+    margin: 1em;
+
+    font-size: 2vw;
+    
+    transition: all .2s ease-in-out;
+}
+
+.modeList button[disabled]{
+    background-color: #aa7cff;
+    color: rgba(0, 0, 0, 0.5);
+    transform: scale(1.1);
+}
+
+.modeList button:not([disabled]):not([class^="active"]):hover {
+    transform: scale(1.1);
+    background: #9f6efa;
+}
+.modeList button[class^="active"] {
+    background-color: rgb(0, 225, 255);
     transform: scale(1.1);
 }
