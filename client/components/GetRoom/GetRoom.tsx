@@ -23,7 +23,7 @@ export default function GetRoom({ setPage }: { setPage : Function})  {
         if(!nameCheck()) return;
         code = Math.floor(1000 + Math.random() * 9000).toString();
         window.history.replaceState(null, '', '/room');
-        setPage(<Lobby code={code} name={name} setPage={setPage} />);
+        setPage(<Lobby code={code} name={name} create setPage={setPage} />);
     }
 
     return (

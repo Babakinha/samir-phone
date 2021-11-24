@@ -1,34 +1,68 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Socket, io } from 'socket.io-client'
+import Image from 'next/image'
+
 import Sound from 'react-sound'
 import styles from './Lobby.module.css'
+import toast, { Toaster, ToastOptions } from 'react-hot-toast';
+import Phone from './Phone/Phone'
 
 let socket: Socket;
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_IO_ENDPOINT!
 
 
-export default function Lobby({ code, name, setPage }: {code: string, name: string, setPage: Function}) {
+export default function Lobby({ code, name, create = false, setPage }: {code: string, name: string, create?: boolean, setPage: Function}) {
 
-    const [RoomData, setRoomData] = useState<any>({mode: 0});
+    const [RoomData, setRoomData] = useState<any>({mode: 1});
     const [isOwner, setIsOwner] = useState<boolean>(false);
     const [isPlaying, setPlaying] = useState<boolean>(true);
     const Mode = RoomData.mode;
 
+    let isTransitioning = false;
+
+    const defaultToast: ToastOptions = {
+        position: 'bottom-right',
+        style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            fontSize: '1rem',
+        }
+    }
+
+    const callbackToast = (error: string = "Unknown Error") => toast.error(error, defaultToast)
+
     const changeMode = (mode: Number) => {
         setRoomData({...RoomData, ...{mode}});
-        socket.emit('changeMode', mode);
+        socket.emit('changeMode', mode, callbackToast);
+    }
+
+    const startGame = (mode: Number) => {
+        isTransitioning = true;
+        toast.success('Game Started: ' + mode, defaultToast)
+        if( mode == 1)
+            setPage(<Phone socket={socket} setPage={setPage} isOwner={isOwner}/>)
     }
     
     useLayoutEffect(() => {
         //Socket.io
         socket = io(ENDPOINT)
-        socket.emit('create', {code, name}, () => {setPlaying(false);socket.emit('join', {code, name})})
+        if(create)
+            socket.emit('create', {code, name}, callbackToast);
+        else {
+            setPlaying(false);
+            socket.emit('join', {code, name}, callbackToast);
+        }
 
         socket.on('roomData', data => setRoomData({...RoomData, ...data}))
+        socket.on('start', mode => startGame(mode.mode))
+
+        changeMode(Mode);
 
         return () => {
-            socket.disconnect()
-            socket.off()
+            if(!isTransitioning)
+                socket.disconnect()
+                socket.off()
         }
     }, [])
 
@@ -41,27 +75,26 @@ export default function Lobby({ code, name, setPage }: {code: string, name: stri
 
     return(
         <div className={styles.lobbyContainer}>
-
             <div className={styles.lobbyHead}>
                 <span>Welcome {name} To room: </span>
-                <span className={styles.lobbyCode}>{code}</span>
+                <span className={styles.lobbyCode} onClick={() => {
+                    if('clipboard' in navigator)
+                        navigator.clipboard.writeText(window.location.origin + '/invite?code=' + code)
+                    else
+                        document.execCommand('copy', true, window.location.origin + '/invite?code=' + code);
+                    toast.success("Invite copied to clipboard", defaultToast)
+                }}>{code}</span>
 
                 <button className={styles.muteButton + (isPlaying? '' : ' muted')}  onClick={() => {setPlaying(!isPlaying)}}>
                     {isPlaying ?
-                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/>
-                            <path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/>
-                            <path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.489 3.489 0 0 1 9.025 8 3.49 3.49 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/>
-                        </svg> :
-                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06zm7.137 2.096a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0z"/>
-                        </svg> 
+                        <Image src="/svg/sound.svg" height={64} width={64} alt='Sound'/>:
+                        <Image src="/svg/muted.svg" height={64} width={64} alt='Muted'/>
                     }
                 </button>
             </div>
 
             <div className={styles.mainContainer}>
-                <button className={styles.startButton} disabled={isOwner}>Start</button>
+                <button className={styles.startButton} onClick={() => socket.emit('start', {mode: Mode}, callbackToast)} disabled={isOwner}>Start</button>
                 <ul className={styles.playerList}>
                     {//@ts-ignore
                         //creates span for each player and if owner is true create attribute
@@ -71,12 +104,12 @@ export default function Lobby({ code, name, setPage }: {code: string, name: stri
             </div>
 
             <ul className={styles.modeList}>
-                <button onClick={() => changeMode(0)} className={Mode == 0? 'active' : undefined} disabled={isOwner}>Mode 0</button>
-                <button onClick={() => changeMode(1)} className={Mode == 1? 'active' : undefined} disabled={isOwner}>Mode 1</button>
-                <button onClick={() => changeMode(2)} className={Mode == 2? 'active' : undefined} disabled={isOwner}>Mode 2</button>
+                <button onClick={() => changeMode(0)} className={Mode == 0? 'active' : undefined} disabled>Pictionary</button>
+                <button onClick={() => changeMode(1)} className={Mode == 1? 'active' : undefined} disabled={isOwner}>Phone</button>
+                <button onClick={() => changeMode(2)} className={Mode == 2? 'active' : undefined} disabled>???</button>
             </ul>
 
-            <Sound url="/music.mp3" playStatus={isPlaying? 'PLAYING' : 'STOPPED'} volume={20} />
+            <Sound url="/music.mp3" playStatus={isPlaying? 'PLAYING' : 'STOPPED'} volume={20} loop/>
         </div>
     )
 }

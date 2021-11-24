@@ -1,14 +1,26 @@
+import { PhoneGame } from "./PhoneGame";
+
 export type User = {
     id: string,
     name: string,
     owner?: boolean
 }
 
+export enum Modes {
+    Phone = 1
+}
+
+export const gameModes = new Map<Modes, any >([
+    [1, PhoneGame]
+])
+
 export type Room = {
     code: string,
     owner: User,
-    mode: number,
+    mode: Modes,
     users: User[]
+    inGame: boolean,
+    gameData?: PhoneGame
 }
 
 const rooms: Room[] = [];
@@ -18,7 +30,7 @@ export function createRoom(code: string, owner: User) {
         return { error: 'Room already exists' };
         
     owner.owner = true
-    const newRoom: Room = {code, owner, mode: 0, users: [owner]};
+    const newRoom: Room = {code, owner, mode: 0, inGame: false, users: [owner]};
     rooms.push(newRoom);
     return newRoom;
 }
@@ -29,6 +41,9 @@ export function removeRoom(code: string) {
     if(roomIndex == -1)
         return { error: 'Room doesn\'t exist'};
     
+    // Kill the game it there is any
+    rooms[roomIndex].gameData?.kill();
+    delete rooms[roomIndex].gameData;
     // Removes and returns the removed room
     return rooms.splice(roomIndex, 1)[0];
     
@@ -39,9 +54,11 @@ export function addUser(room: Room | string, user: User) {
         room = getRoom(room)!;
     if(!room) return { error: 'Room doesn\'t exist'}
 
-    //TODO: User already exists
+    if(room.inGame) return { error: 'Room already in game'}
 
-    room.users.push(user)
+    if(getUserRoom(user.id)) return { error: 'User already in a room'}
+
+    room.users.push(user) 
 
     return room;
 }
@@ -65,8 +82,9 @@ export function removeUser(room: Room | string, user: User | string) {
         if(room.users.length > 1){
             room.owner = room.users[userIndex + 1];
             room.users[userIndex + 1].owner = true;
-        }else
+        }else{
             return removeRoom(room.code)   
+        }
     }
     
     // Removes and returns the removed user
