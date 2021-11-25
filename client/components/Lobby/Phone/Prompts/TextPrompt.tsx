@@ -52,7 +52,7 @@ export default function TextPrompt({headerText = "Write Something for others to 
 
     return (
         <div>
-            <h1>{headerText}</h1>
+            <h1 style={{color: 'white'}}>{headerText}</h1>
             {drawData}
             <input placeholder={realPlaceholder} style={{width: '75%'}} disabled={isDone} type="text" onChange={onTextChange} />
             <button ref={submitButton} type="submit" onClick={onSubmit}>Done</button>

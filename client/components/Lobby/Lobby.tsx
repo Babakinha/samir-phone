@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Socket, io } from 'socket.io-client'
 import Image from 'next/image'
 
@@ -17,6 +17,8 @@ export default function Lobby({ code, name, create = false, setPage }: {code: st
     const [isOwner, setIsOwner] = useState<boolean>(false);
     const [isPlaying, setPlaying] = useState<boolean>(true);
     const Mode = RoomData.mode;
+
+    const timeRef = useRef<HTMLInputElement>(null);
 
     let isTransitioning = true;
 
@@ -39,7 +41,6 @@ export default function Lobby({ code, name, create = false, setPage }: {code: st
 
     const startGame = (mode: Number, roomData: any) => {
         isTransitioning = true;
-        toast.success('Game Started: ' + mode, defaultToast)
         console.log(roomData);
         if( mode == 1)
             setPage(<Phone socket={socket} setPage={setPage} isOwner={isOwner} roomData={roomData}/>)
@@ -90,17 +91,18 @@ export default function Lobby({ code, name, create = false, setPage }: {code: st
                         document.execCommand('copy', true, window.location.origin + '/invite?code=' + code);
                     toast.success("Invite copied to clipboard", defaultToast)
                 }}>{code}</span>
-
+                
                 <button className={styles.muteButton + (isPlaying? '' : ' muted')}  onClick={() => {setPlaying(!isPlaying)}}>
                     {isPlaying ?
                         <Image src="/svg/sound.svg" height={64} width={64} alt='Sound'/>:
                         <Image src="/svg/muted.svg" height={64} width={64} alt='Muted'/>
                     }
                 </button>
+                <input type="number" min='5' max='240' name="Time" ref={timeRef} defaultValue={60} />
             </div>
 
             <div className={styles.mainContainer}>
-                <button className={styles.startButton} onClick={() => socket.emit('start', {mode: Mode, options: {time: 30}}, callbackToast)} disabled={isOwner}>Start</button>
+                <button className={styles.startButton} onClick={() => socket.emit('start', {mode: Mode, options: {time: timeRef.current?.valueAsNumber || 60}}, callbackToast)} disabled={isOwner}>Start</button>
                 <ul className={styles.playerList}>
                     {//@ts-ignore
                         //creates span for each player and if owner is true create attribute

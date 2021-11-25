@@ -53,3 +53,22 @@
     border-radius: 20px;       /* roundness of the scroll thumb */
     border: 3px solid #333;  /* creates padding around scroll thumb */
 }
+
+.timer {
+    display: block;
+    height: 60px;
+    width: 60px;
+    top: 0;
+    right: 0;
+    position: absolute;
+    line-height: 60px;
+
+    -moz-border-radius: 30px; /* or 50% */
+    border-radius: 30px; /* or 50% */
+
+    background-color: black;
+    color: white;
+    text-align: center;
+    font-size: 2em;
+
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import CanvasDraw from 'react-canvas-draw'
 import toast, { ToastOptions } from 'react-hot-toast'
 import { Socket } from 'socket.io-client'
@@ -8,6 +8,7 @@ import EndList from './EndList/EndList'
 import TextPrompt from './Prompts/TextPrompt'
 
 import styles from './Phone.module.css'
+
 
 export default function Phone({socket, setPage, isOwner, roomData}: {socket: Socket, setPage: Function, isOwner: boolean, roomData: any}) {
 
@@ -25,10 +26,17 @@ export default function Phone({socket, setPage, isOwner, roomData}: {socket: Soc
     const callbackToast = (error: string = "Unknown Error") => toast.error(error, defaultToast)
     
     const onDone = (text: string) => {
-        socket.emit('Phone_Text', text, callbackToast);
+        socket.emit('Phone_Text', text);
     }
 
     const [thisPrompt, setPrompt] = useState(<TextPrompt onDone={onDone} />)
+    const [timer, setTimer] = useState(0)
+
+    React.useEffect(() => {
+        const count =
+            timer > 0 && setInterval(() => setTimer(timer - 1), 1000);
+        return () => clearInterval((count as NodeJS.Timer));
+      }, [timer]);
 
     useLayoutEffect(() => {
         socket.on('Phone_RoundData', ({action, time, data} : {action: "Text" | "Drawing", time: number, data?: string}) => {
@@ -37,12 +45,13 @@ export default function Phone({socket, setPage, isOwner, roomData}: {socket: Soc
                 setPrompt(<TextPrompt onDone={onDone} time={time} data={data} />) 
             ;else
                 setPrompt(<DrawPrompt onDone={onDone} time={time} data={data} />);
-            
-            callbackToast("Type: " + action + "\nTime: " + time)
+
+            setTimer(time)
+
+
         })
 
         socket.on('Phone_EndGame', (gameData) => {
-            callbackToast('Game Ended');
             setPrompt(<EndList roomData={roomData} gameData={gameData} socket={socket}/>)
             if(isOwner)socket.emit('Phone_EndGame');
         })
@@ -54,6 +63,7 @@ export default function Phone({socket, setPage, isOwner, roomData}: {socket: Soc
     return (
         <div className={styles.iLoveEasterEggs}>
             <div className={styles.outerPrompt}>
+                <span className={styles.timer}>{timer}</span>
                 {thisPrompt}
             </div>
         </div>
