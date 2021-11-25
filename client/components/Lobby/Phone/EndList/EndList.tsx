@@ -1,3 +1,4 @@
+import { useRouter } from 'next/dist/client/router';
 import React, { useEffect, useState } from 'react'
 import CanvasDraw from 'react-canvas-draw';
 import { Socket } from 'socket.io-client';
@@ -8,9 +9,10 @@ export default function EndList({roomData, gameData, socket}: {roomData: any, ga
     let roundIndex = 0;
     const [currentRounds, setRounds] = useState<any>()
 
+    const router = useRouter();
+
     const emid = () => {
-        console.log
-        setRounds(<DrawPrompt headerText='Header Text' data='TestData' />)
+        router.push('/')
     }
 
     
