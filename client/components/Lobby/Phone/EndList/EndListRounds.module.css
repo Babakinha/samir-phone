@@ -1,0 +1,32 @@
+.outerThingy {
+    background-color: #333;
+    color: white;
+
+    border: 10px solid white;
+    margin-top: 69vh;   
+    position: relative;
+
+    border-radius: 30px;
+    border: 1px solid #333;
+}
+
+.outerMessage {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    padding: 10px;
+    background-color: black;
+    border-radius: 5px;
+    width: auto;
+    margin: 20px;
+}
+
+.dataCanvas {
+    position: relative;
+}
+
+.outerMessage span,
+.outerMessage div {
+    margin-left: 20px;
+}

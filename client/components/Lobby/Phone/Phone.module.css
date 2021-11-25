@@ -1,0 +1,55 @@
+
+
+.outerPrompt {
+    width: 80vw;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+
+    overflow-y: scroll;
+
+    border: 10px solid #333;
+    border-radius: 10px;
+
+    backdrop-filter: brightness(60%);
+}
+
+.iLoveEasterEggs {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+	background-size: 400% 400%;
+	animation: gradient 15s ease infinite;
+}
+
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.outerPrompt::-webkit-scrollbar {
+    width: 12px;               /* width of the entire scrollbar */
+}
+
+.outerPrompt::-webkit-scrollbar-track {
+    background: rgba(10, 10, 10, 0.3);        /* color of the tracking area */
+    border-radius: 5px;
+}
+
+.outerPrompt::-webkit-scrollbar-thumb {
+    background-color: rgb(31, 9, 70);    /* color of the scroll thumb */
+    border-radius: 20px;       /* roundness of the scroll thumb */
+    border: 3px solid #333;  /* creates padding around scroll thumb */
+}

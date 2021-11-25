@@ -18,7 +18,7 @@ export default function Lobby({ code, name, create = false, setPage }: {code: st
     const [isPlaying, setPlaying] = useState<boolean>(true);
     const Mode = RoomData.mode;
 
-    let isTransitioning = false;
+    let isTransitioning = true;
 
     const defaultToast: ToastOptions = {
         position: 'bottom-right',
@@ -37,11 +37,12 @@ export default function Lobby({ code, name, create = false, setPage }: {code: st
         socket.emit('changeMode', mode, callbackToast);
     }
 
-    const startGame = (mode: Number) => {
+    const startGame = (mode: Number, roomData: any) => {
         isTransitioning = true;
         toast.success('Game Started: ' + mode, defaultToast)
+        console.log(roomData);
         if( mode == 1)
-            setPage(<Phone socket={socket} setPage={setPage} isOwner={isOwner}/>)
+            setPage(<Phone socket={socket} setPage={setPage} isOwner={isOwner} roomData={roomData}/>)
     }
     
     useLayoutEffect(() => {
@@ -55,14 +56,16 @@ export default function Lobby({ code, name, create = false, setPage }: {code: st
         }
 
         socket.on('roomData', data => setRoomData({...RoomData, ...data}))
-        socket.on('start', mode => startGame(mode.mode))
+        socket.on('start', mode => startGame(mode.mode, RoomData))
 
         changeMode(Mode);
 
         return () => {
-            if(!isTransitioning)
+            if(!isTransitioning){
+                console.log("Killing")
                 socket.disconnect()
                 socket.off()
+            }
         }
     }, [])
 
@@ -70,6 +73,9 @@ export default function Lobby({ code, name, create = false, setPage }: {code: st
         setIsOwner(RoomData.users?.find((u: any) => u.id == socket?.id && u.owner)? false : true);
         socket.off('roomData')
         socket.on('roomData', data => setRoomData({...RoomData, ...data}));
+
+        socket.off('start')
+        socket.on('start', mode => startGame(mode.mode, RoomData));
     }, [RoomData])
 
 
@@ -94,7 +100,7 @@ export default function Lobby({ code, name, create = false, setPage }: {code: st
             </div>
 
             <div className={styles.mainContainer}>
-                <button className={styles.startButton} onClick={() => socket.emit('start', {mode: Mode}, callbackToast)} disabled={isOwner}>Start</button>
+                <button className={styles.startButton} onClick={() => socket.emit('start', {mode: Mode, options: {time: 30}}, callbackToast)} disabled={isOwner}>Start</button>
                 <ul className={styles.playerList}>
                     {//@ts-ignore
                         //creates span for each player and if owner is true create attribute

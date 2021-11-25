@@ -1,0 +1,48 @@
+.outerHeader {
+    background-color: rgba(10, 10, 10, 0.6);
+    margin: 0;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 70vw;
+    border-radius: 10px;
+
+}
+
+.outerHeader * {
+    margin: 5px;
+}
+
+.outerPrompt {
+    background-color: rgba(10, 10, 10, 0.2);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border: 3px solid #333;
+    width: 70vw;
+    height: 75vh;
+    
+}
+
+.canvasData {
+    position: relative;
+    border: 10px solid #333;
+    margin: 5px;
+    border-radius: 10px;
+    height: 10px;
+}
+
+.submitButton {
+    background-color: rgba(red, green, blue, alpha);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    background: #7429ff;
+    margin: 5px;
+    width: 15vh;
+    height: 10vh;
+}

@@ -29,7 +29,7 @@ function socket({io}: { io: Server}) {
             socket.broadcast.to(code).emit('roomData', {users: players})
         })
 
-        socket.on('start', ({mode}: {mode: Rooms.Modes}, callback = () => {}) => {
+        socket.on('start', ({mode, options}: {mode: Rooms.Modes, options?: any}, callback = () => {}) => {
             const room = Rooms.getUserRoom(socket.id)
             if(!room) return callback('Room doesn\'t exist');
             if(room.owner.id != socket.id) return callback('YOU SHALL NOT START, YOU ARE NOT THAT POWERFUL!');
@@ -38,7 +38,7 @@ function socket({io}: { io: Server}) {
             socket.broadcast.to(room.code).emit('start', {mode});
 
             room.inGame = true;
-            room.gameData = createClass(Rooms.gameModes.get(mode), room, io);
+            room.gameData = createClass(Rooms.gameModes.get(mode), room, io, options);
         })
 
         socket.on('canvas', (canvas, callback) => {

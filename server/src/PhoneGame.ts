@@ -33,7 +33,7 @@ export class PhoneGame {
     options: PhoneGameOptions = {
         startWith: "Text",
         ownerParticipates: true,
-        time: 40
+        time: 60
     }
     
     active: boolean = true;
@@ -104,6 +104,7 @@ export class PhoneGame {
             console.log("PhoneText!")
             const playerRound = this.findPlayerRound(socket.id);
             if(!playerRound) return callback('Phone Game Error :(');
+            if(!data) return callback('Invalid data :(');
             const round = playerRound.rounds[this.roundIndex]
             round.done = true;
             round.data = data;
@@ -118,22 +119,27 @@ export class PhoneGame {
         const round = playerRound?.rounds[this.roundIndex]
 
         console.log("Sending")
+        const data = playerRound?.rounds[this.roundIndex - 1]?.data
 
-        socket.emit('Phone_RoundData', {action: round?.action, time: this.options.time, roundLength: this.roundLength, index: this.roundIndex});
-    }
-
-    private startGame() {
-
+        socket.emit('Phone_RoundData', {action: round?.action, time: this.options.time, roundLength: this.roundLength, index: this.roundIndex, data});
     }
 
     private endGame() {
         console.dir(this.gameData, {depth: null, color: true});
         this.io.to(this.room.code).emit('Phone_EndGame', this.gameData)
-        this.kill()
+        const owner = this.io.sockets.sockets.get(this.room.owner.id)
+        
+        owner?.on('Phone_EndGame', () => this.kill());
+
+        owner?.on('Phone_EndRound', () => {
+            this.io.to(this.room.code).emit('Phone_EndRound')
+        })
+
     }
 
     private startNextRound(yourRoundIndex: number) {
         if(yourRoundIndex < this.roundIndex) return; //This is if we call this delayed
+        if((this.roundIndex + 1) > this.roundLength ) return this.endGame();
         if(!this.active) return;
 
         this.sockets.forEach((socket) => {
@@ -142,12 +148,10 @@ export class PhoneGame {
         
         setTimeout(() => {
             if(!this.active) return;
-            this.roundIndex++;
-
-            console.log("Next!")
             if((this.roundIndex + 1) > this.roundLength ) this.endGame();
-            this.startNextRound(this.roundIndex);
 
+            this.roundIndex++;
+            this.startNextRound(this.roundIndex);
         }, 1000 * this.options.time)
     }
 
@@ -156,6 +160,7 @@ export class PhoneGame {
 
     public kill() {
         console.log("Dying")
+        this.io.to(this.room.code).emit('Phone_kill');
         this.active = false;
         delete this.room.gameData; //I know this doesn't work, but why not
     }

@@ -42,6 +42,7 @@ export function removeRoom(code: string) {
         return { error: 'Room doesn\'t exist'};
     
     // Kill the game it there is any
+    console.log("Killing game")
     rooms[roomIndex].gameData?.kill();
     delete rooms[roomIndex].gameData;
     // Removes and returns the removed room
